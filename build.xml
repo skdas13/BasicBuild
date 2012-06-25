@@ -5,6 +5,9 @@
     <property name="build.test.dir" value="${build.dir}/test"/>
     <property name="build.jar.dir" value="${build.dir}/jar"/>
 
+    <property name="test.report.dir" value="${build.dir}/junitreport"/>
+    <property name="unit.test.report.dir" value="${build.dir}/junitreport/unit-test"/>
+
     <property name="src.dir" value="src"/>
     <property name="unit.test.dir" value="unit-test"/>
     <property name="system.test.dir" value="system-test"/>
@@ -47,15 +50,36 @@
         </java>
     </target>
 
-    <target name="compile-unit-tests"  depends="compile">
+    <target name="compile-unit-tests" >
         <javac srcdir="${unit.test.dir}" destdir="${build.test.dir}" classpathref="classpath"  />
     </target>
 
-    <target name="compile-system-tests"  depends="compile">
+    <target name="compile-system-tests" >
         <javac srcdir="${system.test.dir}" destdir="${build.test.dir}" classpathref="classpath"  />
     </target>
 
     <target name="compile-tests"  depends="compile-unit-tests, compile-system-tests">
+    </target>
+
+    <target name="run-unit-tests" depends="compile, compile-tests">
+        <mkdir dir="${test.report.dir}"  />
+        <mkdir dir="${unit.test.report.dir}"  />
+
+        <junit printsummary="yes" errorProperty="test.failed" failureProperty="test.failed">
+            <classpath refid="classpath" />
+            <formatter type="xml" />
+            <batchtest fork="yes" todir="${unit.test.report.dir}">
+                <fileset dir="unit-test/" includes="**/*Test.java" />
+            </batchtest>
+        </junit>
+
+
+        <junitreport todir="${unit.test.report.dir}">
+            <fileset dir="${unit.test.report.dir}"  includes="TEST-*.xml"  />
+            <report todir="${unit.test.report.dir}"  />
+        </junitreport>
+
+        <fail message="Unit tests failed. Check log and/or reports." if="test.failed" />
     </target>
 
 
