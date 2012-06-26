@@ -16,7 +16,7 @@ public class SubstitutionCipherTest {
     @Test
     public void encodesStringSubstitutingAllOccurrencesOfLetters() {
         String result = new SubstitutionCipher("th", "av").encode("the thin thrush theme");
-        assertThat(result, is("ave avin avrusv aveme"));
+        assertThat(result, is("ave avin avrusv theme"));
     }
 
     @Test
